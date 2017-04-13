@@ -19,12 +19,24 @@ public class Game {
 
     public void playGame(Player player){
         System.out.println("Welcome to BlackJack game. You have 500 coins that you can bet on blackjack games.\n If you win, you get your bet doubled.\n If you get BlackJack, you win 1,5 the amount you bet.");
-        bet(player);
-        getCard(player);
-        getCard(player);
-        while( !defWin(player) && !phaseEnd){
-            playPhase(player);
-            System.out.println("Points:"+ player.getPoints());
+        while(player.getBalance()>=1) {
+            clearBoard(player);
+            System.out.println("Your current balance is: "+ player.getBalance());
+            bet(player);
+            getCard(player);
+            getCard(player);
+            if (defWin(player)) {
+
+                System.out.println("You got blackjack in first 2 cards! You won " + player.getBetAmount()*1.5+ " coins.");
+                player.addCoins(player.getBetAmount());
+            }
+            else {
+                while (!phaseEnd) {
+                    playPhase(player);
+                    System.out.println("Points:" + player.getPoints());
+                }
+                checkResult(player);
+            }
         }
 
     }
@@ -32,9 +44,10 @@ public class Game {
         if(player.getPoints()<=21)
         {
             getOptions(player);
-
         }
-        else phaseEnd=true;
+        else {
+            phaseEnd=true;
+        }
 }
 
 
@@ -57,8 +70,6 @@ public class Game {
 
     private boolean defWin(Player player){
         if(player.getPoints()==21){
-            System.out.println("You got blackjack in first 2 cards! You win " + player.getBetAmount()*1.5+ " coins.");
-            player.addCoins(player.getBetAmount());
             return true;
         }
         return false;
@@ -68,8 +79,26 @@ public class Game {
         System.out.println("How much coins do you want to bet on this game?");
         Scanner scan= new Scanner(System.in);
         int bet = scan.nextInt();
-        if(player.getPoints()<=bet) player.setBetAmount(bet);
+        if(player.getBalance()>=bet) player.setBetAmount(bet);
         else throw new InvalidParameterException("Invalid bet amount.");
+    }
+
+    private void clearBoard(Player player){
+        player.setPoints(0);
+        player.setBetAmount(0);
+        player.setCards("");
+        phaseEnd=false;
+    }
+
+    public void checkResult(Player player){
+        if(player.getPoints()<=21){
+            player.addCoins(player.getBetAmount());
+            System.out.println("You won. Amount of "+ player.getBetAmount()+ " coins has been added to your account.");
+        }
+        else{
+            player.removeCoins(player.getBetAmount());
+            System.out.println("You lost. Amount of " + player.getBetAmount() + " coins has been deducted from your account.");
+        }
     }
 }
 

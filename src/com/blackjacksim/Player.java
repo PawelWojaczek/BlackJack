@@ -38,4 +38,14 @@ public class Player {
     public void setBetAmount(int betAmount) {
         this.betAmount = betAmount;
     }
+
+    public double getBalance(){
+        return balance;
+    }
+    public void setPoints(int amount){
+        this.points=amount;
+    }
+    public void setCards(String cards){
+        this.cards=cards;
+    }
 }
