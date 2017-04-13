@@ -1,7 +1,9 @@
 package com.blackjacksim;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Deck {
     private String[] suits = {"Spades", "Hearts", "Diamonds","Clubs"};
@@ -18,12 +20,20 @@ public class Deck {
 
     ArrayList<Deck> deck= new ArrayList<>();
 
-    public void constructDeck(){
-        for(int i =0;i<suits.length;i++){
-            for(int j=0;j<ranks.length;j++){
-                deck.add(new Deck(suits[i],ranks[j],weights[j]));
+    public void constructDeck() {
+        for (int i = 0; i < suits.length; i++) {
+            for (int j = 0; j < ranks.length; j++) {
+                deck.add(new Deck(suits[i], ranks[j], weights[j]));
             }
         }
+    }
+
+    public Deck GetCard(){
+        Random generator = new Random();
+        int num = generator.nextInt(deck.size());
+        Deck card = deck.get(num);
+        deck.remove(num);
+        return card;
     }
 
 }
