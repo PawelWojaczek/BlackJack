@@ -3,8 +3,10 @@ package com.blackjacksim;
 public class Main {
 
     public static void main(String[] args) {
-        Player player = new Player("Gracz1");
+        /*Player player = new Player("Gracz1");
         Game newGame = new Game();
-        newGame.playGame(player);
+        newGame.playGame(player);*/
+        Deck deck = new Deck();
+        deck.constructDeck();
     }
 }
