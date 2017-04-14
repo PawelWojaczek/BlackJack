@@ -1,8 +1,7 @@
 package com.blackjacksim;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Deck {
@@ -28,7 +27,7 @@ public class Deck {
         }
     }
 
-    public Deck GetCard(){
+    public Deck getCard(){
         Random generator = new Random();
         int num = generator.nextInt(deck.size());
         Deck card = deck.get(num);
@@ -36,4 +35,8 @@ public class Deck {
         return card;
     }
 
+    @Override
+    public String toString() {
+        return rank+ " of " + suit;
+    }
 }
