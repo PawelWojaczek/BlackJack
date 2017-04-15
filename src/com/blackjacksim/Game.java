@@ -78,6 +78,7 @@ public class Game {
 
     private void getOptions(){
         System.out.println("It is your turn.\nYou have "+ player.getPoints()+" points.\nEnter 'H' to Hit, 'S' to stand or 'D' to Double down");
+        // ^Change the message to adjust what is possible in the turn.
         Scanner scan=new Scanner(System.in);
         char c=scan.next().charAt(0);
         switch(c)
@@ -89,10 +90,16 @@ public class Game {
                 phaseEnd=true;
                 break;
             case 'D':case 'd':
-                doubleDown();
-                break;
+                if(player.getBalance()>=2*player.getBetAmount()){
+                    doubleDown();
+                    break;
+                }
+                else{
+                    System.out.println("Not enough coins to double down.\n");
+                    getOptions();
+                }
             case 'X':case 'x':
-                //split();
+                //split();   <- Add split function
                 break;
             default:
                 throw new InvalidParameterException("Wrong character passed. ");
