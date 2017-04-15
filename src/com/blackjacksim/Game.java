@@ -10,7 +10,7 @@ public class Game {
     private Player dealer = new Player("Dealer");
 
     private void appendCard(Deck card, Player player){
-        player.addCard(card.rank + " of "+card.suit);
+        player.addCard(card);
         player.addPoints(card.weight);
         System.out.println(player.getName() + " got " + card);
     }
@@ -36,8 +36,9 @@ public class Game {
             appendCard(cards.getCard(), dealer);
             if(!defWin()) {
                 while (!phaseEnd) {
-                    System.out.println(player.getHand());
+                    System.out.println(player.getCards());
                     playPhase();
+                    checkBust(player);
 
                 }
                 System.out.println("Dealer's turn.");
@@ -50,8 +51,14 @@ public class Game {
     }
 
     private void playDealerPhase(){
-        while(dealer.getPoints()<17) appendCard(cards.getCard(),dealer);
-        if(dealer.getPoints()>21) dealer.setBust(true);
+        while(dealer.getPoints()<17) {
+            appendCard(cards.getCard(),dealer);
+            checkBust(dealer);
+        }
+        System.out.println(dealer.getCards());
+    }
+    private void checkBust(Player player){
+        if(player.getPoints()>21) player.setBust(true);
     }
 
     private void playPhase(){
@@ -60,7 +67,6 @@ public class Game {
             getOptions();
         }
         else {
-            player.setBust(true);
             phaseEnd=true;
         }
 }
@@ -71,16 +77,16 @@ public class Game {
         char c=scan.next().charAt(0);
         switch(c)
         {
-            case 'H':
+            case 'H':case 'h':
                 appendCard(cards.getCard(),player);
                 break;
-            case 'S':
+            case 'S':case 's':
                 phaseEnd=true;
                 break;
-            case 'D':
+            case 'D':case 'd':
                 doubleDown();
                 break;
-            case 'X':
+            case 'X':case 'x':
                 //split();
                 break;
             default:
