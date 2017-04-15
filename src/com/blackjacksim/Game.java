@@ -10,7 +10,7 @@ public class Game {
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
 
-    private void appendCard(Deck card, Player player){
+    private void appendCard(Card card, Player player){
         player.addCard(card);
         System.out.println(player.getName() + " got " + card);
     }
@@ -130,8 +130,8 @@ public class Game {
     public void aceCheck(Player player){
         if(player.getPoints()>21) {
             player.clearPoints();
-            for(Deck card: player.getHand()) player.addPoints(card.weight);
-            for (Deck card : player.getHand()) {
+            for(Card card: player.getHand()) player.addPoints(card.weight);
+            for (Card card : player.getHand()) {
                 if (card.rank.equals("Ace") && player.getPoints()>21) player.removePoints(10);
             }
         }

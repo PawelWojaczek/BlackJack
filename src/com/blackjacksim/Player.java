@@ -1,6 +1,5 @@
 package com.blackjacksim;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Player {
@@ -9,7 +8,7 @@ public class Player {
     private int betAmount;
     private String name;
     private boolean busted = false;
-    private ArrayList<Deck> cards =new ArrayList<>();
+    private ArrayList<Card> cards =new ArrayList<>();
 
 
     public Player(String name) {
@@ -52,7 +51,7 @@ public class Player {
         return balance;
     }
 
-    public void addCard(Deck card){
+    public void addCard(Card card){
             cards.add(card);
             this.points+=card.weight;
     }
@@ -72,7 +71,7 @@ public class Player {
     public String getCards() {
         return this.getName()+"'s hand: "+cards;
     }
-    public ArrayList<Deck> getHand(){
+    public ArrayList<Card> getHand(){
         return cards;
     }
 
