@@ -4,14 +4,14 @@ import java.security.InvalidParameterException;
 import java.util.Scanner;
 
 public class Game {
+
     boolean phaseEnd = false;
-    private  Deck cards = new Deck();
+    private Deck cards = new Deck();
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
 
     private void appendCard(Deck card, Player player){
         player.addCard(card);
-        player.addPoints(card.weight);
         System.out.println(player.getName() + " got " + card);
     }
     public void showBalance(){
@@ -34,17 +34,15 @@ public class Game {
             appendCard(cards.getCard(), player);
             appendCard(cards.getCard(), player);
             appendCard(cards.getCard(), dealer);
-            if(!defWin()) {
                 while (!phaseEnd) {
                     System.out.println(player.getCards());
                     playPhase();
-                    checkBust(player);
-
                 }
-                System.out.println("Dealer's turn.");
-                playDealerPhase();
-                checkResult();
-            }
+                if(!player.isBusted()) {
+                    System.out.println("Dealer's turn.");
+                    playDealerPhase();
+                }
+                if(!defWin()) checkResult();
         }
         System.out.println("Not enough coins to play the game.");
 
@@ -53,18 +51,25 @@ public class Game {
     private void playDealerPhase(){
         while(dealer.getPoints()<17) {
             appendCard(cards.getCard(),dealer);
+            aceCheck(dealer);
             checkBust(dealer);
         }
         System.out.println(dealer.getCards());
     }
     private void checkBust(Player player){
-        if(player.getPoints()>21) player.setBust(true);
+        if(player.getPoints()>21)
+        {
+            System.out.println(player.getName()+" busted.");
+            player.setBust(true);
+        }
     }
 
     private void playPhase(){
-        if(player.getPoints()<=21)
+        if(player.getPoints()<21)
         {
             getOptions();
+            aceCheck(player);
+            checkBust(player);
         }
         else {
             phaseEnd=true;
@@ -95,13 +100,34 @@ public class Game {
     }
 
     private boolean defWin(){
-        if(player.getPoints()==21) {
-            System.out.println("You got blackjack in first 2 cards! You won " + player.getBetAmount() * 1.5 + " coins.");
-            player.addCoins(1.5*player.getBetAmount());
-            phaseEnd = true;
+        if(player.getHand().size()==2 && player.getPoints()==21)
+        {
+            if(dealer.getHand().size()==2 && dealer.getPoints()==21){
+                System.out.println("Both player and dealer got BlackJacks");
+                outcome(2);
+            }
+            else{
+                System.out.println("You got blackjack in first 2 cards! You won " + player.getBetAmount() * 1.5 + " coins.");
+                player.addCoins(1.5*player.getBetAmount());
+            }
+            return true;
+        }
+        else if(dealer.getHand().size()==2 && dealer.getPoints()==21){
+            System.out.println("Dealer got BlackJack.");
+            outcome(0);
             return true;
         }
         return false;
+    }
+
+    public void aceCheck(Player player){
+        if(player.getPoints()>21) {
+            player.clearPoints();
+            for(Deck card: player.getHand()) player.addPoints(card.weight);
+            for (Deck card : player.getHand()) {
+                if (card.rank.equals("Ace") && player.getPoints()>21) player.removePoints(10);
+            }
+        }
     }
 
     private void bet(Player player)    {
@@ -113,12 +139,8 @@ public class Game {
     }
 
     private void clearBoard(){
-        player.clearPoints();
-        player.clearCards();
-        dealer.clearCards();
-        dealer.clearPoints();
-        player.setBust(false);
-        dealer.setBust(false);
+        player.clearHand();
+        dealer.clearHand();
         phaseEnd=false;
     }
 
@@ -130,11 +152,7 @@ public class Game {
             else if (player.getPoints() < dealer.getPoints()) outcome(0);
             else outcome(2);
         }
-        else
-        {
-            if(dealer.isBusted()) outcome(2);
-            else outcome(0);
-        }
+        else outcome(0);
     }
 
     public void outcome(int value)

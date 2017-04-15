@@ -8,7 +8,6 @@ public class Player {
     private double balance;
     private int betAmount;
     private String name;
-    private String hand;
     private boolean busted = false;
     private ArrayList<Deck> cards =new ArrayList<>();
 
@@ -17,17 +16,22 @@ public class Player {
         this.name=name;
         this.points = 0;
         this.balance=500;
-        this.betAmount=0;
     }
 
     public int getPoints() {
         return points;
     }
 
-    public void addPoints(int amount){
-        points+=amount;
+    public void removePoints(int amount){
+        this.points-=amount;
     }
 
+    public void addPoints(int amount){
+        this.points+=amount;
+    }
+    public void clearPoints(){
+        this.points=0;
+    }
     public void addCoins(double amount){
         balance+=amount;
     }
@@ -48,17 +52,9 @@ public class Player {
         return balance;
     }
 
-    public void clearPoints(){
-        this.points=0;
-    }
-
-    public void clearCards(){
-        cards.clear();
-    }
-
     public void addCard(Deck card){
             cards.add(card);
-            hand+=card.rank+"of"+card.suit+",";
+            this.points+=card.weight;
     }
 
     public String getName() {
@@ -68,11 +64,21 @@ public class Player {
     public void setBust(boolean value){
         this.busted=value;
     }
+
     public boolean isBusted(){
         return this.busted;
     }
 
     public String getCards() {
         return this.getName()+"'s hand: "+cards;
+    }
+    public ArrayList<Deck> getHand(){
+        return cards;
+    }
+
+    public void clearHand(){
+        this.busted=false;
+        this.points=0;
+        this.cards.clear();
     }
 }
