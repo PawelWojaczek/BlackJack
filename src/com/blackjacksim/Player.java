@@ -8,6 +8,7 @@ public class Player {
     private int betAmount;
     private String name;
     private boolean busted = false;
+    private boolean phaseEnd = false;
     private ArrayList<Card> cards =new ArrayList<>();
 
 
@@ -53,7 +54,7 @@ public class Player {
 
     public void addCard(Card card){
             cards.add(card);
-            this.points+=card.weight;
+            this.points+=card.getWeight();
     }
 
     public String getName() {
@@ -79,5 +80,15 @@ public class Player {
         this.busted=false;
         this.points=0;
         this.cards.clear();
+        this.betAmount=0;
+        this.phaseEnd = false;
+    }
+
+    public boolean isPhaseEnd() {
+        return phaseEnd;
+    }
+
+    public void setPhaseEnd(boolean phaseEnd) {
+        this.phaseEnd = phaseEnd;
     }
 }

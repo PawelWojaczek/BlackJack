@@ -4,11 +4,12 @@ import java.security.InvalidParameterException;
 import java.util.Scanner;
 
 public class Game {
-
-    boolean phaseEnd = false;
     private Deck cards = new Deck();
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
+    private boolean splitPossible= false;
+    private boolean doubleDownPossible=false;
+    private boolean splitCalled=false;
 
     private void appendCard(Card card, Player player){
         player.addCard(card);
@@ -18,39 +19,49 @@ public class Game {
         System.out.println("Your current balance is: " + player.getBalance());
     }
 
-    public void doubleDown(){
+    public void doubleDown(Player player){
         System.out.println("Double down. Doubling bet and picking 1 card.");
         player.setBetAmount(2*player.getBetAmount());
-        appendCard(cards.getCard(), player);
-        phaseEnd=true;
+        appendCard(cards.getRandomCard(), player);
+        player.setPhaseEnd(true);
     }
-    public void playGame(){
+
+
+    private void getStartingCards(){
+        if(player.getHand().size()==0) {
+            appendCard(cards.getRandomCard(), player);
+            appendCard(cards.getRandomCard(), player);
+            appendCard(cards.getRandomCard(), dealer);
+        }
+    }
+
+    public void initializeGame(){
         System.out.println("Welcome to BlackJack game. You have 500 coins that you can bet on blackjack games.\n If you win, you get your bet doubled.\nBlackJack paying 3 to 2.\nDealer stands at 17 or higher.");
         while(player.getBalance()>=1) {
-            clearBoard();
+            clearBoard(player);
             cards.constructDeck();
             showBalance();
             bet(player);
-            appendCard(cards.getCard(), player);
-            appendCard(cards.getCard(), player);
-            appendCard(cards.getCard(), dealer);
-                while (!phaseEnd) {
-                    System.out.println(player.getCards());
-                    playPhase();
-                }
-                if(!player.isBusted()) {
-                    System.out.println("Dealer's turn.");
-                    playDealerPhase();
-                }
-                if(!defWin()) checkResult();
+            getStartingCards();
+            playGame(player);
         }
         System.out.println("Not enough coins to play the game.");
-
+    }
+    private void playGame(Player player){
+            getStartingCards();
+            playPhase(player);
+                if(!splitCalled) {
+                    if (!player.isBusted()) {
+                        System.out.println("Dealer's turn.");
+                        playDealerPhase();
+                    }
+                    if (!defWin(player)) checkResult(player);
+                }
     }
 
     private void playDealerPhase(){
         while(dealer.getPoints()<17) {
-            appendCard(cards.getCard(),dealer);
+            appendCard(cards.getRandomCard(),dealer);
             aceCheck(dealer);
             checkBust(dealer);
         }
@@ -64,49 +75,63 @@ public class Game {
         }
     }
 
-    private void playPhase(){
-        if(player.getPoints()<21)
-        {
-            getOptions();
-            aceCheck(player);
-            checkBust(player);
-        }
-        else {
-            phaseEnd=true;
+    private void playPhase(Player player){
+        while(!player.isPhaseEnd()) {
+            System.out.println(player.getCards());
+            if (player.getPoints() < 21) {
+                getOptions(player);
+                aceCheck(player);
+                checkBust(player);
+            } else {
+                player.setPhaseEnd(true);
+            }
         }
 }
 
-    private void getOptions(){
-        System.out.println("It is your turn.\nYou have "+ player.getPoints()+" points.\nEnter 'H' to Hit, 'S' to stand or 'D' to Double down");
-        // ^Change the message to adjust what is possible in the turn.
+    private void getPossibilities(Player player){
+            if (player.getHand().size() == 2) doubleDownPossible = true;
+            else doubleDownPossible = false;
+            if (!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank())) splitPossible = true;
+            else splitPossible = false;
+    }
+
+    private void getOptions(Player player){
+        getPossibilities(player);
+        System.out.println("It is your turn.\nYou have "+ player.getPoints()+" points.");
+        System.out.println("'H' to hit.");
+        System.out.println("'S' to stand.");
+        if(doubleDownPossible) System.out.println("'D' to double down.");
+        if(splitPossible) System.out.println("'X' to split.");
+
         Scanner scan=new Scanner(System.in);
         char c=scan.next().charAt(0);
         switch(c)
         {
             case 'H':case 'h':
-                appendCard(cards.getCard(),player);
+                appendCard(cards.getRandomCard(),player);
                 break;
             case 'S':case 's':
-                phaseEnd=true;
+                player.setPhaseEnd(true);
                 break;
             case 'D':case 'd':
                 if(player.getBalance()>=2*player.getBetAmount()){
-                    doubleDown();
+                    doubleDown(player);
                     break;
                 }
                 else{
                     System.out.println("Not enough coins to double down.\n");
-                    getOptions();
+                    getOptions(player);
                 }
             case 'X':case 'x':
-                //split();   <- Add split function
+                splitCalled=true;
+                split();
                 break;
             default:
                 throw new InvalidParameterException("Wrong character passed. ");
         }
     }
 
-    private boolean defWin(){
+    private boolean defWin(Player player){
         if(player.getHand().size()==2 && player.getPoints()==21)
         {
             if(dealer.getHand().size()==2 && dealer.getPoints()==21){
@@ -130,28 +155,44 @@ public class Game {
     public void aceCheck(Player player){
         if(player.getPoints()>21) {
             player.clearPoints();
-            for(Card card: player.getHand()) player.addPoints(card.weight);
+            for(Card card: player.getHand()) player.addPoints(card.getWeight());
             for (Card card : player.getHand()) {
-                if (card.rank.equals("Ace") && player.getPoints()>21) player.removePoints(10);
+                if (card.getRank().equals("Ace") && player.getPoints()>21) player.removePoints(10);
             }
         }
     }
 
     private void bet(Player player)    {
-        System.out.println("How much coins do you want to bet on this game?");
-        Scanner scan= new Scanner(System.in);
-        int bet = scan.nextInt();
-        if(player.getBalance()>=bet) player.setBetAmount(bet);
-        else throw new InvalidParameterException("Invalid bet amount.");
+        if(player.getBetAmount()==0) {
+            System.out.println("How much coins do you want to bet on this game?");
+            Scanner scan = new Scanner(System.in);
+            int bet = scan.nextInt();
+            if (player.getBalance() >= bet) player.setBetAmount(bet);
+            else throw new InvalidParameterException("Invalid bet amount.");
+        }
     }
 
-    private void clearBoard(){
+    private void clearBoard(Player player){
         player.clearHand();
         dealer.clearHand();
-        phaseEnd=false;
+        player.setPhaseEnd(false);
+        splitCalled=false;
     }
 
-    public void checkResult(){
+    private void split(){
+        Player player1 = new Player(player.getName());
+        player1.setBetAmount(player.getBetAmount());
+        player1.addCard(player.getHand().get(0));
+        playPhase(player1);
+        player.removePoints(player.getHand().get(0).getWeight());
+        player.getHand().remove(0);
+        playPhase(player);
+        playDealerPhase();
+        checkResult(player1);
+        checkResult(player);
+    }
+
+    public void checkResult(Player player){
         System.out.println(player.getName()+"'s points: " + player.getPoints()+". "+dealer.getName()+" points: "+dealer.getPoints());
         if(!player.isBusted())
         {
