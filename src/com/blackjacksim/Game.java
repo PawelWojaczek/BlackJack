@@ -7,6 +7,8 @@ public class Game {
     private Deck cards = new Deck();
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
+    private static final int dealerStandsAt = 17;
+    private static final int bustAt = 21;
     private boolean splitPossible= false;
     private boolean doubleDownPossible=false;
     private boolean splitCalled=false;
@@ -15,17 +17,17 @@ public class Game {
         player.addCard(card);
         System.out.println(player.getName() + " got " + card);
     }
-    public void showBalance(){
+
+    private void showBalance(){
         System.out.println("Your current balance is: " + player.getBalance());
     }
 
-    public void doubleDown(Player player){
+    private void doubleDown(Player player){
         System.out.println("Double down. Doubling bet and picking 1 card.");
         player.setBetAmount(2*player.getBetAmount());
         appendCard(cards.getRandomCard(), player);
         player.setPhaseEnd(true);
     }
-
 
     private void getStartingCards(){
         if(player.getHand().size()==0) {
@@ -60,15 +62,17 @@ public class Game {
     }
 
     private void playDealerPhase(){
-        while(dealer.getPoints()<17) {
+        while(dealer.getPoints()<dealerStandsAt) {
             appendCard(cards.getRandomCard(),dealer);
             aceCheck(dealer);
             checkBust(dealer);
         }
         System.out.println(dealer.getCards());
     }
+
+
     private void checkBust(Player player){
-        if(player.getPoints()>21)
+        if(playerBust(player))
         {
             System.out.println(player.getName()+" busted.");
             player.setBust(true);
@@ -79,7 +83,7 @@ public class Game {
         while(!player.isPhaseEnd()) {
             System.out.println(player.getCards());
             if (player.getPoints() < 21) {
-                getOptions(player);
+                chooseOptions(player);
                 aceCheck(player);
                 checkBust(player);
             } else {
@@ -89,20 +93,21 @@ public class Game {
 }
 
     private void getPossibilities(Player player){
-            if (player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance()) doubleDownPossible = true;
-            else doubleDownPossible = false;
-            if (!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank())) splitPossible = true;
-            else splitPossible = false;
+            doubleDownPossible =player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance();
+            splitPossible=!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank());
     }
 
-    private void getOptions(Player player){
+    private void showOptions(Player player){
         getPossibilities(player);
         System.out.println("It is your turn.\nYou have "+ player.getPoints()+" points.");
         System.out.println("'H' to hit.");
         System.out.println("'S' to stand.");
         if(doubleDownPossible) System.out.println("'D' to double down.");
         if(splitPossible) System.out.println("'X' to split.");
+    }
 
+    private void chooseOptions(Player player){
+        showOptions(player);
         Scanner scan=new Scanner(System.in);
         char c=scan.next().charAt(0);
         switch(c)
@@ -129,10 +134,23 @@ public class Game {
         }
     }
 
+    private void split(){
+        Player player1 = new Player(player.getName());
+        player1.setBetAmount(player.getBetAmount());
+        player1.addCard(player.getHand().get(0));
+        playPhase(player1);
+        player.removePoints(player.getHand().get(0).getWeight());
+        player.getHand().remove(0);
+        playPhase(player);
+        playDealerPhase();
+        checkResult(player1);
+        checkResult(player);
+    }
+
     private boolean defWin(Player player){
-        if(player.getHand().size()==2 && player.getPoints()==21)
+        if(isBlackJack(player))
         {
-            if(dealer.getHand().size()==2 && dealer.getPoints()==21){
+            if(isBlackJack(dealer)){
                 System.out.println("Both player and dealer got BlackJacks");
                 outcome(2);
             }
@@ -142,20 +160,27 @@ public class Game {
             }
             return true;
         }
-        else if(dealer.getHand().size()==2 && dealer.getPoints()==21){
+        else if(isBlackJack(dealer)){
             System.out.println("Dealer got BlackJack.");
             outcome(0);
             return true;
         }
         return false;
     }
+    private boolean isBlackJack(Player player){
+        return player.getHand().size()==2 && player.getPoints()==21;
+    }
 
-    public void aceCheck(Player player){
-        if(player.getPoints()>21) {
+    private boolean playerBust(Player player){
+        return player.getPoints()>bustAt;
+    }
+
+    private void aceCheck(Player player){
+        if(playerBust(player)) {
             player.clearPoints();
             for(Card card: player.getHand()) player.addPoints(card.getWeight());
             for (Card card : player.getHand()) {
-                if (card.getRank().equals("Ace") && player.getPoints()>21) player.removePoints(10);
+                if (card.getRank().equals("Ace") && playerBust(player)) player.removePoints(10);
             }
         }
     }
@@ -177,20 +202,8 @@ public class Game {
         splitCalled=false;
     }
 
-    private void split(){
-        Player player1 = new Player(player.getName());
-        player1.setBetAmount(player.getBetAmount());
-        player1.addCard(player.getHand().get(0));
-        playPhase(player1);
-        player.removePoints(player.getHand().get(0).getWeight());
-        player.getHand().remove(0);
-        playPhase(player);
-        playDealerPhase();
-        checkResult(player1);
-        checkResult(player);
-    }
 
-    public void checkResult(Player player){
+    private void checkResult(Player player){
         System.out.println(player.getName()+"'s points: " + player.getPoints()+". "+dealer.getName()+" points: "+dealer.getPoints());
         if(!player.isBusted())
         {
@@ -201,7 +214,7 @@ public class Game {
         else outcome(0);
     }
 
-    public void outcome(int value)
+    private void outcome(int value)
     {
         switch(value){
             case 0:
