@@ -89,7 +89,7 @@ public class Game {
 }
 
     private void getPossibilities(Player player){
-            if (player.getHand().size() == 2) doubleDownPossible = true;
+            if (player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance()) doubleDownPossible = true;
             else doubleDownPossible = false;
             if (!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank())) splitPossible = true;
             else splitPossible = false;
@@ -114,17 +114,15 @@ public class Game {
                 player.setPhaseEnd(true);
                 break;
             case 'D':case 'd':
-                if(player.getBalance()>=2*player.getBetAmount()){
-                    doubleDown(player);
-                    break;
-                }
-                else{
-                    System.out.println("Not enough coins to double down.\n");
-                    getOptions(player);
-                }
+                if(doubleDownPossible) doubleDown(player);
+                else throw new InvalidParameterException("Double down is not possible");
+                break;
             case 'X':case 'x':
-                splitCalled=true;
-                split();
+                if(splitPossible) {
+                    splitCalled = true;
+                    split();
+                }
+                else throw new InvalidParameterException("Split is not possible.");
                 break;
             default:
                 throw new InvalidParameterException("Wrong character passed. ");
