@@ -8,8 +8,10 @@ public class Game {
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
 
+
     private static final int dealerStandsAt = 17;
     private static final int bustAt = 21;
+
 
     private boolean splitPossible= false;
     private boolean doubleDownPossible=false;
