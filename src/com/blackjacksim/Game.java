@@ -75,7 +75,6 @@ public class Game {
 
     private void playPhase(Player player){
         while(!player.isPhaseEnd()) {
-            System.out.println("Talia: "+cards.deck.size());
             System.out.println(player.getCards());
             if (!playerBust(player) && player.getPoints()!=21) {
                 chooseOptions(player);
