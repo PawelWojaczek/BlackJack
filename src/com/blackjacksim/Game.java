@@ -88,7 +88,7 @@ public class Game {
 
     private void getPossibilities(Player player){
             doubleDownPossible =player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance() || splitCalled && player.getHand().size()==1;
-            splitPossible=!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank());
+            splitPossible=!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank()) && player.getHand().size()==2;
     }
 
     private void showOptions(Player player){

@@ -4,24 +4,22 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Deck{
-    private String[] suits = {"Spades", "Hearts", "Diamonds","Clubs"};
-    private String[] ranks = {"2","3","4","5","6","7","8","9","10","Jack","Queen","King","Ace"};
-    private int[] weights = {2,3,4,5,6,7,8,9,10,10,10,10,11};
+    private static final String[] suits = {"Spades", "Hearts", "Diamonds","Clubs"};
 
-  /*  private enum cards {
-        TWO(2),
-        THREE(3),
-        FOUR(4),
-        FIVE(5),
-        SIX(6),
-        SEVEN(7),
-        EIGHT(8),
-        NINE(9),
-        TEN(10),
-        JACK(10),
-        QUEEN(10),
-        KING(10),
-        ACE(11);
+  private static enum cards {
+        Two(2),
+        Three(3),
+        Four(4),
+        Five(5),
+        Six(6),
+        Seven(7),
+        Eight(8),
+        Nine(9),
+        Ten(10),
+        Jack(10),
+        Queen(10),
+        King(10),
+        Ace(11);
 
         private int value;
 
@@ -31,15 +29,14 @@ public class Deck{
         public int getValue(){
             return value;
         }
-    }-*/
+    }
 
     ArrayList<Card> deck= new ArrayList<>();
 
     public void constructDeck() {
-        for (int i = 0; i < suits.length; i++) {
-            for (int j = 0; j < ranks.length; j++) {
-                deck.add(new Card(suits[i], ranks[j], weights[j]));
-            }
+        for(cards card : cards.values())
+        {
+            for(String s : suits) deck.add(new Card(s,card.name(),card.getValue()));
         }
     }
 
