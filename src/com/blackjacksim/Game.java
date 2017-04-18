@@ -7,8 +7,10 @@ public class Game {
     private Deck cards = new Deck();
     private Player player = new Player("Player");
     private Player dealer = new Player("Dealer");
+
     private static final int dealerStandsAt = 17;
     private static final int bustAt = 21;
+
     private boolean splitPossible= false;
     private boolean doubleDownPossible=false;
     private boolean splitCalled=false;
@@ -20,13 +22,6 @@ public class Game {
 
     private void showBalance(){
         System.out.println("Your current balance is: " + player.getBalance());
-    }
-
-    private void doubleDown(Player player){
-        System.out.println("Double down. Doubling bet and picking 1 card.");
-        player.setBetAmount(2*player.getBetAmount());
-        appendCard(cards.getRandomCard(), player);
-        player.setPhaseEnd(true);
     }
 
     private void getStartingCards(){
@@ -44,11 +39,11 @@ public class Game {
             cards.constructDeck();
             showBalance();
             bet(player);
-            getStartingCards();
             playGame(player);
         }
         System.out.println("Not enough coins to play the game.");
     }
+
     private void playGame(Player player){
             getStartingCards();
             playPhase(player);
@@ -70,7 +65,6 @@ public class Game {
         System.out.println(dealer.getCards());
     }
 
-
     private void checkBust(Player player){
         if(playerBust(player))
         {
@@ -81,8 +75,9 @@ public class Game {
 
     private void playPhase(Player player){
         while(!player.isPhaseEnd()) {
+            System.out.println("Talia: "+cards.deck.size());
             System.out.println(player.getCards());
-            if (player.getPoints() < 21) {
+            if (!playerBust(player) && player.getPoints()!=21) {
                 chooseOptions(player);
                 aceCheck(player);
                 checkBust(player);
@@ -93,7 +88,7 @@ public class Game {
 }
 
     private void getPossibilities(Player player){
-            doubleDownPossible =player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance();
+            doubleDownPossible =player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance() || splitCalled && player.getHand().size()==1;
             splitPossible=!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank());
     }
 
@@ -134,6 +129,13 @@ public class Game {
         }
     }
 
+    private void doubleDown(Player player){
+        System.out.println("Double down. Doubling bet and picking 1 card.");
+        player.setBetAmount(2*player.getBetAmount());
+        appendCard(cards.getRandomCard(), player);
+        player.setPhaseEnd(true);
+    }
+
     private void split(){
         Player player1 = new Player(player.getName());
         player1.setBetAmount(player.getBetAmount());
@@ -152,7 +154,7 @@ public class Game {
         {
             if(isBlackJack(dealer)){
                 System.out.println("Both player and dealer got BlackJacks");
-                outcome(2);
+                outcome(2,player);
             }
             else{
                 System.out.println("You got blackjack in first 2 cards! You won " + player.getBetAmount() * 1.5 + " coins.");
@@ -162,11 +164,12 @@ public class Game {
         }
         else if(isBlackJack(dealer)){
             System.out.println("Dealer got BlackJack.");
-            outcome(0);
+            outcome(0,player);
             return true;
         }
         return false;
     }
+
     private boolean isBlackJack(Player player){
         return player.getHand().size()==2 && player.getPoints()==21;
     }
@@ -179,7 +182,7 @@ public class Game {
         if(playerBust(player)) {
             player.clearPoints();
             for(Card card: player.getHand()) player.addPoints(card.getWeight());
-            for (Card card : player.getHand()) {
+            for(Card card : player.getHand()) {
                 if (card.getRank().equals("Ace") && playerBust(player)) player.removePoints(10);
             }
         }
@@ -198,23 +201,31 @@ public class Game {
     private void clearBoard(Player player){
         player.clearHand();
         dealer.clearHand();
+        cards.deck.clear();
         player.setPhaseEnd(false);
         splitCalled=false;
     }
 
+    private boolean playerWins(Player player){
+        return player.getPoints()>dealer.getPoints();
+    }
+
+    private boolean dealerWins(Player player){
+        return player.getPoints()<dealer.getPoints();
+    }
 
     private void checkResult(Player player){
         System.out.println(player.getName()+"'s points: " + player.getPoints()+". "+dealer.getName()+" points: "+dealer.getPoints());
         if(!player.isBusted())
         {
-            if (player.getPoints() > dealer.getPoints() || dealer.isBusted()) outcome(1);
-            else if (player.getPoints() < dealer.getPoints()) outcome(0);
-            else outcome(2);
+            if (playerWins(player) || dealer.isBusted()) outcome(1,player);
+            else if (dealerWins(player)) outcome(0,player);
+            else outcome(2,player);
         }
-        else outcome(0);
+        else outcome(0,player);
     }
 
-    private void outcome(int value)
+    private void outcome(int value,Player player)
     {
         switch(value){
             case 0:
