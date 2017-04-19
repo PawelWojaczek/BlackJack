@@ -5,14 +5,21 @@ The purpose of the game is to get higher score than dealer without exceeding 21.
 Functionality:
 
 The deck contains 52 cards, from 2 to an Ace (without Jokers).
+
 Application uses one full deck for each game. 
+
 Before getting cards, player must bet on the game.
+
 After bet, player gets 2 cards from the deck and dealer gets one card. Cards are being picked randomly from the deck.
 
 Getting 21 points in first 2 cards ( f.e. Ace - King) results in Blackjack. Blackjacks work as following:
+
 Both player and dealer got BlackJack - Push. Bet returned.
+
 Only player got Blackjack - Player wins 1.5 times his bet amount.
+
 Only dealer got Blackjack - Dealer wins, even if player had 21 score.
+
 
 
 Depending on the cards received, player can:
