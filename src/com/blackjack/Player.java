@@ -70,7 +70,7 @@ public class Player {
     }
 
     public String getCards() {
-        return this.getName()+"'s hand: "+cards;
+        return "\n" + this.getName() + "'s hand: " + cards;
     }
     public ArrayList<Card> getHand(){
         return cards;

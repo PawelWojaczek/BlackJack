@@ -36,7 +36,7 @@ public class Game {
     }
 
     public void initializeGame(){
-        System.out.println("Welcome to BlackJack game. You have 500 coins that you can bet on blackjack games.\n If you win, you get your bet doubled.\nBlackJack paying 3 to 2.\nDealer stands at 17 or higher.");
+        System.out.println("Welcome to BlackJack game. You have 500 coins that you can bet on blackjack games.\nIf you win, you get your bet doubled.\nBlackJack paying 3 to 2.\nDealer stands at 17 or higher.");
         while(player.getBalance()>=1) {
             clearBoard(player);
             cards.constructDeck();
@@ -52,7 +52,7 @@ public class Game {
             playPhase(player);
                 if(!splitCalled) {
                     if (!player.isBusted()) {
-                        System.out.println("Dealer's turn.");
+                        System.out.println("\nDealer's turn.");
                         playDealerPhase();
                     }
                     if (!defWin(player)) checkResult(player);
@@ -217,7 +217,7 @@ public class Game {
     }
 
     private void checkResult(Player player){
-        System.out.println(player.getName()+"'s points: " + player.getPoints()+". "+dealer.getName()+" points: "+dealer.getPoints());
+        System.out.println(player.getName() + "'s points: " + player.getPoints() + ". " + dealer.getName() + " points: " + dealer.getPoints() + "\n");
         if(!player.isBusted())
         {
             if (playerWins(player) || dealer.isBusted()) outcome(1,player);
