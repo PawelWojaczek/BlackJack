@@ -32,13 +32,14 @@ Split - split two cards into two hands, each with the same bet amount. Player ca
 Hitting split aces is allowed. BlackJacks from splits are counted as normal BlackJacks.
 
 Double down - double the bet amount, draw one card and end turn.
+Double down is allowed after a split.
 
 Player/Dealer busts when exceeding 21 points.
 
 Dealer stands at 17 or higher (also on "soft" 17).
 
 
-Each card has it's own value. Non-face cards has the same value as their ranks. Jacks,Queens and Kings are valued as 10. Aces have value of 11 or 1, depends on player's hand.
+Each card has it's own value. Non-face cards has the same value as their ranks. Jacks,Queens and Kings are valued as 10. Aces have value of 11 or 1, in favor on player's hand.
 
 
 
