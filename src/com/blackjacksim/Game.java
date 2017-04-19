@@ -194,7 +194,7 @@ public class Game {
             System.out.println("How much coins do you want to bet on this game?");
             Scanner scan = new Scanner(System.in);
             int bet = scan.nextInt();
-            if (player.getBalance() >= bet) player.setBetAmount(bet);
+            if (player.getBalance() >= bet && bet > 0) player.setBetAmount(bet);
             else throw new InvalidParameterException("Invalid bet amount.");
         }
     }
