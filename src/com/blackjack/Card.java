@@ -1,4 +1,4 @@
-package com.blackjacksim;
+package com.blackjack;
 
 
 public class Card{

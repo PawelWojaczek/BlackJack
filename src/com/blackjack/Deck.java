@@ -1,4 +1,4 @@
-package com.blackjacksim;
+package com.blackjack;
 
 import java.util.ArrayList;
 import java.util.Random;

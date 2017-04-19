@@ -1,4 +1,4 @@
-package com.blackjacksim;
+package com.blackjack;
 
 import java.security.InvalidParameterException;
 import java.util.Scanner;
