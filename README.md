@@ -28,26 +28,10 @@ Double down - double the bet amount, draw one card and end turn.
 
 Player/Dealer busts when exceeding 21 points.
 
+Dealer stands at 17 or higher (also on "soft" 17).
 
 
-Each card has it's own value:
-
-Card    Value
-2       2
-3       3
-4       4
-5       5
-6       6
-7       7
-8       8
-9       9
-10      10
-Jack    10
-Queen   10
-King    10
-Ace     11/1
-
-Ace's value depends on score.
+Each card has it's own value. Non-face cards has the same value as their ranks. Jacks,Queens and Kings are valued as 10. Aces have value of 11 or 1, depends on player's hand.
 
 
 
