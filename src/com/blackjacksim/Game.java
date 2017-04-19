@@ -10,7 +10,7 @@ public class Game {
 
 
     private static final int dealerStandsAt = 17;
-    private static final int bustAt = 21;
+    private static final int bustAt = 22;
 
 
     private boolean splitPossible= false;
@@ -31,6 +31,7 @@ public class Game {
             appendCard(cards.getRandomCard(), player);
             appendCard(cards.getRandomCard(), player);
             appendCard(cards.getRandomCard(), dealer);
+            aceCheck(player);
         }
     }
 
@@ -90,7 +91,7 @@ public class Game {
 
     private void getPossibilities(Player player){
             doubleDownPossible =player.getHand().size() == 2 && player.getBetAmount()<=2*player.getBalance() || splitCalled && player.getHand().size()==1;
-            splitPossible=!splitCalled && player.getHand().get(0).getRank().equals(player.getHand().get(1).getRank()) && player.getHand().size()==2;
+        splitPossible = !splitCalled && player.getHand().get(0).getWeight() == (player.getHand().get(1).getWeight()) && player.getHand().size() == 2;
     }
 
     private void showOptions(Player player){
@@ -176,7 +177,7 @@ public class Game {
     }
 
     private boolean playerBust(Player player){
-        return player.getPoints()>bustAt;
+        return player.getPoints() >= bustAt;
     }
 
     private void aceCheck(Player player){
